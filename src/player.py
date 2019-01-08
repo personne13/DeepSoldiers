@@ -6,35 +6,35 @@ import pygame
 import random
 from utils import *
 
-WIDTH = 600
-HEIGHT = 600
-FPS = 60
-
-# define colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-RED = (255, 0, 0)
-GREEN = (0, 255, 0)
-BLUE = (0, 0, 255)
-YELLOW = (255, 255, 0)
-
 class Player(pygame.sprite.Sprite):
-    def __init__(self):
+    def __init__(self, position):
         pygame.sprite.Sprite.__init__(self)
-        self.image = pygame.Surface((20, 20))
+        self.image = pygame.Surface((40, 40))
         self.image.fill(GREEN)
         self.rect = self.image.get_rect()
-        self.rect.centerx = WIDTH / 2
-        self.rect.bottom = HEIGHT - 10
-        self.speed = 10
+        self.rect.centerx = position.x
+        self.rect.centery = position.y
+        self.speed = 3
         self.direction = Vector2(0, 0)#either 0 either normalized.
+        self.actionType = ActionType.NONE
+        self.lastShoot = 0
+        self.score = 0
+        self.shootDirection = Vector2(0, 0)
 
     def changeDirection(self, direction):
         self.direction = direction
 
+    def shoot(self):
+        if(self.lastShoot > 100):
+            self.lastShoot = 0
+            return True;
+
+        return False;
+
     def update(self):
         self.rect.move_ip(self.direction.x * self.speed, self.direction.y * self.speed)
         self.direction = Vector2(0, 0)
+        self.lastShoot += 1
 
         if self.rect.right > WIDTH:
             self.rect.right = WIDTH

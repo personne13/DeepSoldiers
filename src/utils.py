@@ -1,16 +1,22 @@
 from enum import Enum
 import math
 
+WIDTH = 600
+HEIGHT = 600
+FPS = 60
+
+# define colors
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+RED = (255, 0, 0)
+GREEN = (0, 255, 0)
+BLUE = (0, 0, 255)
+YELLOW = (255, 255, 0)
+
 class ActionType(Enum):
     MOVE = 1
     SHOOT = 2
-
-class Direction(Enum):
-    RIGHT = 1
-    LEFT = 3
-    UP = 2
-    DOWN = 3
-    NONE = 5
+    NONE = 3
 
 class Vector2:
     def __init__(self, x, y):
@@ -25,6 +31,8 @@ class Vector2:
         if(norm != 0):
             self.x = self.x / norm
             self.y = self.y / norm
+
+        return self
 
 class Action:
     def __init__(self, actionType, direction):
