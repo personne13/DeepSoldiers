@@ -18,6 +18,10 @@ class ActionType(Enum):
     SHOOT = 2
     NONE = 3
 
+class ObjectName(Enum):
+    PLAYER = 1
+    BULLET = 2
+
 class Vector2:
     def __init__(self, x, y):
         self.x = float(x);
