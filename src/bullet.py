@@ -8,7 +8,6 @@ class Bullet(pygame.sprite.Sprite):
         self.image = pygame.Surface((10, 10))
         self.image.fill(WHITE)
         self.direction = direction
-        print(direction.x)
         self.rect = self.image.get_rect()
         self.rect.centerx = position.x
         self.rect.centery = position.y

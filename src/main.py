@@ -82,7 +82,7 @@ def main():
         controlPlayers(player1, player2)
         handleActions(player1, all_sprites)
         handleActions(player2, all_sprites)
-        handleCollisions(player1, player2, all_sprites)
+        # handleCollisions(player1, player2, all_sprites)
 
         # # Update
         all_sprites.update()
