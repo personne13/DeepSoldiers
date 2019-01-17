@@ -7,7 +7,7 @@ import random
 from utils import *
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, position):
+    def __init__(self, position, name):
         pygame.sprite.Sprite.__init__(self)
         self.image = pygame.Surface((40, 40))
         self.image.fill(GREEN)
@@ -20,9 +20,20 @@ class Player(pygame.sprite.Sprite):
         self.lastShoot = 0
         self.score = 0
         self.shootDirection = Vector2(0, 0)
+        self.tag = ObjectName.PLAYER
+        self.score = 0
+        self.name = name
 
     def changeDirection(self, direction):
         self.direction = direction
+
+    def is_collided_with(self, sprite):
+        return self.rect.colliderect(sprite.rect)
+
+    def reset(self):
+        self.rect.centerx = 0
+        self.rect.centery = 0
+
 
     def shoot(self):
         if(self.lastShoot > 100):
