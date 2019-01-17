@@ -32,7 +32,7 @@ def controlPlayer(player, input):#input is an array containing all possible inpu
 
     player.changeDirection(direction)
 
-def controlKeyboardPlayers(player1, player2):
+def getInputPlayers(player1, player2):
     input1 = np.zeros(Input.nbInputs, bool)
     input2 = np.zeros(Input.nbInputs, bool)
 
@@ -132,7 +132,8 @@ def main():
 
 
 
-        input1, input2 = controlKeyboardPlayers(player1, player2)
+        input1, input2 = getInputPlayers(player1, player2)
+
         controlPlayer(player1, input1)
         controlPlayer(player2, input2)
 
