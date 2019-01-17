@@ -13,10 +13,22 @@ GREEN = (0, 255, 0)
 BLUE = (0, 0, 255)
 YELLOW = (255, 255, 0)
 
+
 class ActionType(Enum):
     MOVE = 1
     SHOOT = 2
     NONE = 3
+
+class Input:
+    GOUP = 0
+    GODOWN = 1
+    GOLEFT = 2
+    GORIGHT = 3
+    SHOOTUP = 4
+    SHOOTDOWN = 5
+    SHOOTLEFT = 6
+    SHOOTRIGHT = 7
+    nbInputs = 8
 
 class ObjectName(Enum):
     PLAYER = 1

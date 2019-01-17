@@ -2,63 +2,61 @@ import pygame
 from bullet import *
 from player import *
 from utils import *
+import numpy as np
 
-def controlPlayers(player1, player2):
+def controlPlayer(player, input):#input is an array containing all possible inputs
+    direction = Vector2(0, 0)
+    if input[Input.GOLEFT]:
+        direction.x += -1
+    if input[Input.GORIGHT]:
+        direction.x += 1
+    if input[Input.GODOWN]:
+        direction.y += -1
+    if input[Input.GOUP]:
+        direction.y += 1
+
+    if input[Input.SHOOTUP]:
+        player.actionType = ActionType.SHOOT;
+        player.shootDirection = Vector2(0, -1).normalize()
+    if input[Input.SHOOTLEFT]:
+        player.actionType = ActionType.SHOOT;
+        player.shootDirection = Vector2(-1, 0).normalize()
+    if input[Input.SHOOTDOWN]:
+        player.actionType = ActionType.SHOOT;
+        player.shootDirection = Vector2(0, 1).normalize()
+    if input[Input.SHOOTRIGHT]:
+        player.actionType = ActionType.SHOOT;
+        player.shootDirection = Vector2(1, 0).normalize()
+
+    direction.normalize()
+
+    player.changeDirection(direction)
+
+def controlKeyboardPlayers(player1, player2):
+    input1 = np.zeros(Input.nbInputs, bool)
+    input2 = np.zeros(Input.nbInputs, bool)
+
     keystate = pygame.key.get_pressed()
-    direction = Vector2(0, 0)
-    if keystate[pygame.K_LEFT]:
-        direction.x += -1
-    if keystate[pygame.K_RIGHT]:
-        direction.x += 1
-    if keystate[pygame.K_UP]:
-        direction.y += -1
-    if keystate[pygame.K_DOWN]:
-        direction.y += 1
+    input1[Input.GOLEFT] = keystate[pygame.K_LEFT]
+    input1[Input.GORIGHT] = keystate[pygame.K_RIGHT]
+    input1[Input.GODOWN] = keystate[pygame.K_DOWN]
+    input1[Input.GOUP] = keystate[pygame.K_UP]
+    input1[Input.SHOOTUP] = keystate[pygame.K_KP8]
+    input1[Input.SHOOTLEFT] = keystate[pygame.K_KP4]
+    input1[Input.SHOOTDOWN] = keystate[pygame.K_KP5]
+    input1[Input.SHOOTRIGHT] = keystate[pygame.K_KP6]
 
-    if keystate[pygame.K_KP8]:
-        player1.actionType = ActionType.SHOOT;
-        player1.shootDirection = Vector2(0, -1).normalize()
-    if keystate[pygame.K_KP4]:
-        player1.actionType = ActionType.SHOOT;
-        player1.shootDirection = Vector2(-1, 0).normalize()
-    if keystate[pygame.K_KP5]:
-        player1.actionType = ActionType.SHOOT;
-        player1.shootDirection = Vector2(0, 1).normalize()
-    if keystate[pygame.K_KP6]:
-        player1.actionType = ActionType.SHOOT;
-        player1.shootDirection = Vector2(1, 0).normalize()
+    input2[Input.GOLEFT] = keystate[pygame.K_q]
+    input2[Input.GORIGHT] = keystate[pygame.K_d]
+    input2[Input.GODOWN] = keystate[pygame.K_z]
+    input2[Input.GOUP] = keystate[pygame.K_s]
+    input2[Input.SHOOTUP] = keystate[pygame.K_y]
+    input2[Input.SHOOTLEFT] = keystate[pygame.K_g]
+    input2[Input.SHOOTDOWN] = keystate[pygame.K_h]
+    input2[Input.SHOOTRIGHT] = keystate[pygame.K_j]
 
+    return input1, input2
 
-    direction.normalize()
-
-    player1.changeDirection(direction)
-
-    direction = Vector2(0, 0)
-    if keystate[pygame.K_q]:
-        direction.x += -1
-    if keystate[pygame.K_d]:
-        direction.x += 1
-    if keystate[pygame.K_z]:
-        direction.y += -1
-    if keystate[pygame.K_s]:
-        direction.y += 1
-
-    direction.normalize()
-
-    player2.changeDirection(direction)
-
-    if keystate[pygame.K_y]:
-        player2.actionType = ActionType.SHOOT;
-        player2.shootDirection = Vector2(0, -1).normalize()
-    if keystate[pygame.K_g]:
-        player2.actionType = ActionType.SHOOT;
-        player2.shootDirection = Vector2(-1, 0).normalize()
-    if keystate[pygame.K_h]:
-        player2.actionType = ActionType.SHOOT;
-        player2.shootDirection = Vector2(0, 1).normalize()
-    if keystate[pygame.K_j]:
-        player2.actionType = ActionType.SHOOT;
-        player2.shootDirection = Vector2(1, 0).normalize()
 
 def handleActions(player, all_sprites):
     if(player.actionType == ActionType.SHOOT):
@@ -134,7 +132,10 @@ def main():
 
 
 
-        controlPlayers(player1, player2)
+        input1, input2 = controlKeyboardPlayers(player1, player2)
+        controlPlayer(player1, input1)
+        controlPlayer(player2, input2)
+
         handleActions(player1, all_sprites)
         handleActions(player2, all_sprites)
         #print (all_sprites)
