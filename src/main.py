@@ -4,35 +4,46 @@ from player import *
 from utils import *
 import numpy as np
 
-def controlPlayer(player, input):#input is an array containing all possible inputs
+import gym
+import gym_soldiers
+
+def getActionKeyboard(input):#input is an array containing all possible inputs
     direction = Vector2(0, 0)
+    keystate = pygame.key.get_pressed()
+    typeAction = 3
+
     if input[Input.GOLEFT]:
+        typeAction = 1;
         direction.x += -1
     if input[Input.GORIGHT]:
+        typeAction = 1;
         direction.x += 1
     if input[Input.GODOWN]:
-        direction.y += -1
-    if input[Input.GOUP]:
+        typeAction = 1;
         direction.y += 1
+    if input[Input.GOUP]:
+        typeAction = 1;
+        direction.y += -1
 
     if input[Input.SHOOTUP]:
-        player.actionType = ActionType.SHOOT;
-        player.shootDirection = Vector2(0, -1).normalize()
+        typeAction = 2;
+        direction = Vector2(0, -1).normalize()
     if input[Input.SHOOTLEFT]:
-        player.actionType = ActionType.SHOOT;
-        player.shootDirection = Vector2(-1, 0).normalize()
+        typeAction = 2;
+        direction = Vector2(-1, 0).normalize()
     if input[Input.SHOOTDOWN]:
-        player.actionType = ActionType.SHOOT;
-        player.shootDirection = Vector2(0, 1).normalize()
+        typeAction = 2;
+        direction = Vector2(0, 1).normalize()
     if input[Input.SHOOTRIGHT]:
-        player.actionType = ActionType.SHOOT;
-        player.shootDirection = Vector2(1, 0).normalize()
+        typeAction = 2;
+        direction = Vector2(1, 0).normalize()
 
     direction.normalize()
 
-    player.changeDirection(direction)
+    action = Action(typeAction, direction)
+    return action
 
-def getInputKeyboard(player1, player2):
+def getInputKeyboard():
     input1 = np.zeros(Input.nbInputs, bool)
     input2 = np.zeros(Input.nbInputs, bool)
 
@@ -57,103 +68,27 @@ def getInputKeyboard(player1, player2):
 
     return input1, input2
 
-
-def handleActions(player, all_sprites):
-    if(player.actionType == ActionType.SHOOT):
-        if(player.shoot()):
-            newBullet = Bullet(Vector2(player.rect.centerx, player.rect.centery), player.shootDirection, player)
-            all_sprites.add(newBullet)
-
-        player.actionType = ActionType.NONE
-
-
-def handleCollisions(player, all_sprites):
-    #for i in range(len(all_sprites.sprites())):
-    #    (all_sprites.sprites()[i].direction)
-    sprites = all_sprites.sprites()
-    length = len(sprites)
-    toRemove = []
-    for j in range(length):
-        bullet = sprites[j]
-        if (bullet.tag == ObjectName.BULLET): #check if it's a bullet
-            if (bullet.shooter != player):
-                if bullet.is_collided_with(player):
-                    player.reset()
-                    player.score += 1
-                    print(player.name)
-                    print(player.score)
-                    toRemove.append(bullet)
-
-
-    for b in toRemove:
-        b.kill()
-
-
-
-    #if (len(all_sprites.sprites()) > 2) :
-    #    for i in range(2):
-    #        for j in range(2, len(all_sprites.sprites())):
-    #            print(j)
-    #            print(len(all_sprites.sprites()))
-    #            bullet = all_sprites.sprites()[j]
-    #            if bullet.is_collided_with(all_sprites.sprites()[i]):
-    #                all_sprites.sprites()[i].kill
-
-
-
-
-
 def main():
-    # initialize pygame and create window
-    pygame.init()
-    pygame.mixer.init()
-    screen = pygame.display.set_mode((WIDTH, HEIGHT))
-    pygame.display.set_caption("DeepSoldiers!")
+    env = gym.make('soldiers-v0')
     clock = pygame.time.Clock()
 
-    all_sprites = pygame.sprite.Group()
-    player1 = Player(Vector2(10, 10), "Franck")
-    player2 = Player(Vector2(100, 100), "Thomas")
-
-    all_sprites.add(player1)
-    all_sprites.add(player2)
-
-
-    # Game loop
     running = True
+
     while running:
-        # keep loop running at the right speed
-        clock.tick(FPS)
-        # Process input (events)
         for event in pygame.event.get():
             # check for closing window
             if event.type == pygame.QUIT:
                 running = False
 
+        clock.tick(FPS)
+        act_n = []
+        input1, input2 = getInputKeyboard()
+        act_n.append(getActionKeyboard(input1))
+        # print(act_n[0]._type)
+        act_n.append(Action(3, None))
 
+        obs_n, reward_n, done_n, _ = env.step(act_n)
 
-        input1, input2 = getInputKeyboard(player1, player2)
-
-        controlPlayer(player1, input1)
-        controlPlayer(player2, input2)
-
-        handleActions(player1, all_sprites)
-        handleActions(player2, all_sprites)
-        #print (all_sprites)
-        handleCollisions(player1, all_sprites)
-        handleCollisions(player2, all_sprites)
-
-
-        # # Update
-        all_sprites.update()
-
-        # Draw / render
-        screen.fill(BLACK)
-        all_sprites.draw(screen)
-
-        # *after* drawing everything, flip the display
-        pygame.display.flip()
-
-    pygame.quit()
+        env.render()
 
 main()
