@@ -1,0 +1,6 @@
+README.md
+gym_soldiers.egg-info/PKG-INFO
+gym_soldiers.egg-info/SOURCES.txt
+gym_soldiers.egg-info/dependency_links.txt
+gym_soldiers.egg-info/requires.txt
+gym_soldiers.egg-info/top_level.txt
