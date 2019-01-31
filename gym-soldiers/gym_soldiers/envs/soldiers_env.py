@@ -18,12 +18,30 @@ class SoldiersEnv(gym.Env):
 
           player.actionType = ActionType.NONE
 
+  def getObservation(self):
+      sprites = self.all_sprites.sprites()
+      bullets = np.zeros(4, int)
+      for i in range(2):
+        for j in range(len(sprites)):
+            obj = sprites[j]
+            if (obj.tag == ObjectName.BULLET):
+                if (obj.shooter == self.player1 and i == 0):
+                  bullets[0] = obj.rect.centerx
+                  bullets[1] = obj.rect.centery
+                elif(obj.shooter == self.player2 and i == 1):
+                  bullets[2] = obj.rect.centerx
+                  bullets[3] = obj.rect.centery
+
+      observations = [self.player1.rect.centerx, self.player1.rect.centery, self.player2.rect.centerx, self.player2.rect.centery]
+      observations.append(bullets)
+
+      return observations
+
   def handleCollisions(self, player):
-      #for i in range(len(all_sprites.sprites())):
-      #    (all_sprites.sprites()[i].direction)
       sprites = self.all_sprites.sprites()
       length = len(sprites)
       toRemove = []
+      hasBeenTouched = False
       for j in range(length):
           bullet = sprites[j]
           if (bullet.tag == ObjectName.BULLET): #check if it's a bullet
@@ -31,6 +49,7 @@ class SoldiersEnv(gym.Env):
                   if bullet.is_collided_with(player):
                       player.reset()
                       player.score += 1
+                      hasBeenTouched = True
                       print(player.name)
                       print(player.score)
                       toRemove.append(bullet)
@@ -39,9 +58,12 @@ class SoldiersEnv(gym.Env):
       for b in toRemove:
           b.kill()
 
+      return hasBeenTouched
+
   def __init__(self):
     pygame.init()
     pygame.mixer.init()
+    self.action_space = spaces.Discrete(Input.nbInputs)
     self.screen = pygame.display.set_mode((WIDTH, HEIGHT))
     pygame.display.set_caption("DeepSoldiers!")
     self.all_sprites = pygame.sprite.Group()
@@ -72,10 +94,17 @@ class SoldiersEnv(gym.Env):
     self.handleActions(self.player1)
     self.handleActions(self.player2)
 
-    self.handleCollisions(self.player1)
-    self.handleCollisions(self.player2)
+    reward = 0
 
-    return None, None, None, None
+    if(self.handleCollisions(self.player1)):
+      reward += 1
+
+    if(self.handleCollisions(self.player2)):
+      reward -= 1
+
+    observation = self.getObservation()
+
+    return observation, reward, False, None
 
   def reset(self):
     return

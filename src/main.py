@@ -43,6 +43,12 @@ def getActionKeyboard(input):#input is an array containing all possible inputs
     action = Action(typeAction, direction)
     return action
 
+def getInputAI(action):
+    input = np.zeros(Input.nbInputs, bool)
+    input[action] = True
+    return input
+
+
 def getInputKeyboard():
     input1 = np.zeros(Input.nbInputs, bool)
     input2 = np.zeros(Input.nbInputs, bool)
@@ -71,6 +77,7 @@ def getInputKeyboard():
 def main():
     env = gym.make('soldiers-v0')
     clock = pygame.time.Clock()
+    print(env.action_space)
 
     running = True
 
@@ -84,6 +91,8 @@ def main():
         act_n = []
         input1, input2 = getInputKeyboard()
         act_n.append(getActionKeyboard(input1))
+        input_ai = getInputAI(env.action_space.sample())
+        act_n.append(getActionKeyboard(input_ai))
         # print(act_n[0]._type)
         act_n.append(Action(3, None))
 
